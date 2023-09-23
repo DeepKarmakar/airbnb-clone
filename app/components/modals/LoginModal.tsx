@@ -2,12 +2,11 @@
 
 import React, { useState } from "react";
 import Modal from "./Modal";
-import useRegisterModal from "@/app/hooks/useRegisterModal";
+import useLoginModal from "@/app/hooks/useLoginModal";
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
-import Heading from "../Heading";
 
-const RegisterModal = () => {
-  const registerModal = useRegisterModal();
+const LoginModal = () => {
+  const loginModal = useLoginModal();
   const [isLoading, setIsLoading] = useState(false);
 
   const {
@@ -22,25 +21,18 @@ const RegisterModal = () => {
     },
   });
 
-  const bodyContent = (
-    <div>
-      <Heading title="Wecome to AirBnb" subtitle="Create an account" />
-    </div>
-  );
-
   return (
     <Modal
       disabled={isLoading}
-      isOpen={registerModal.isOpen}
-      title="Register"
+      isOpen={loginModal.isOpen}
+      title="Login"
       actionLabel="Continue"
-      onClose={registerModal.onClose}
+      onClose={loginModal.onClose}
       onSubmit={function (): void {
         throw new Error("Function not implemented.");
       }}
-      body={bodyContent}
     />
   );
 };
 
-export default RegisterModal;
+export default LoginModal;
