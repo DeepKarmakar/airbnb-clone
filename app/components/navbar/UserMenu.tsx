@@ -6,8 +6,14 @@ import Avatar from "../Avatar";
 import MenuItem from "./MenuItem";
 import useRegisterModal from "@/app/hooks/useRegisterModal";
 import useLoginModal from "@/app/hooks/useLoginModal";
+import { signOut } from "next-auth/react";
+import { SafeUser } from "@/app/types";
 
-const UserMenu = () => {
+interface UserMenuProps {
+  currentUser?: SafeUser | null;
+}
+
+const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
   const [isOpen, setIsOpen] = useState(false);
   const toggleOpen = useCallback(() => {
     setIsOpen((value) => !value);
@@ -53,7 +59,7 @@ const UserMenu = () => {
         >
           <AiOutlineMenu />
           <div className="hidden md:block">
-            <Avatar />
+            <Avatar src={currentUser?.image} />
           </div>
         </div>
       </div>
@@ -73,7 +79,7 @@ const UserMenu = () => {
           "
         >
           <div className="flex flex-col cursor-pointer">
-            {false ? (
+            {currentUser ? (
               <>
                 <MenuItem label="My trips" />
                 <MenuItem label="My favorites" />
@@ -81,7 +87,7 @@ const UserMenu = () => {
                 <MenuItem label="My properties" />
                 <MenuItem label="Airbnb your home" />
                 <hr />
-                <MenuItem label="Logout" />
+                <MenuItem label="Logout" onClick={() => signOut()} />
               </>
             ) : (
               <>

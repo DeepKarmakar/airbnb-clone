@@ -1,14 +1,23 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import Modal from "./Modal";
 import useRegisterModal from "@/app/hooks/useRegisterModal";
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
 import Heading from "../Heading";
+import Input from "../inputs/Inputs";
+import axios from "axios";
+import toast from "react-hot-toast";
+import Button from "../Button";
+import { FcGoogle } from "react-icons/fc";
+import { AiFillGithub } from "react-icons/ai";
+import useLoginModal from "@/app/hooks/useLoginModal";
+import { signIn } from "next-auth/react";
 
 const RegisterModal = () => {
   const registerModal = useRegisterModal();
   const [isLoading, setIsLoading] = useState(false);
+  const loginModal = useLoginModal();
 
   const {
     register,
@@ -21,10 +30,100 @@ const RegisterModal = () => {
       password: "",
     },
   });
+  const onSubmit: SubmitHandler<FieldValues> = (data) => {
+    setIsLoading(true);
+    console.log("hello");
 
+    axios
+      .post("/api/register", data)
+      .then(() => {
+        toast.success("Registered!");
+        registerModal.onClose();
+        //   loginModal.onOpen();
+      })
+      .catch((error) => {
+        console.log(error);
+
+        toast.error("Something went wrong");
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
+  };
   const bodyContent = (
-    <div>
+    <div className="flex flex-col gap-4">
       <Heading title="Wecome to AirBnb" subtitle="Create an account" />
+      <Input
+        id="email"
+        label="Email"
+        disabled={isLoading}
+        register={register}
+        errors={errors}
+        required
+      />
+      <Input
+        id="name"
+        label="Name"
+        disabled={isLoading}
+        register={register}
+        errors={errors}
+        required
+      />
+      <Input
+        id="password"
+        label="Password"
+        type="password"
+        disabled={isLoading}
+        register={register}
+        errors={errors}
+        required
+      />
+    </div>
+  );
+
+  const onToggle = useCallback(() => {
+    registerModal.onClose();
+    loginModal.onOpen();
+  }, [registerModal, loginModal]);
+
+  const footerContent = (
+    <div className="flex flex-col gap-4 mt-3">
+      <hr />
+      <Button
+        outline
+        label="Continue with Google"
+        icon={FcGoogle}
+        onClick={() => signIn("google")}
+      />
+      <Button
+        outline
+        label="Continue with Github"
+        icon={AiFillGithub}
+        onClick={() => signIn("github")}
+      />
+      <div
+        className="
+          text-neutral-500 
+          text-center 
+          mt-4 
+          font-light
+        "
+      >
+        <p>
+          Already have an account?
+          <span
+            onClick={onToggle}
+            className="
+              text-neutral-800
+              cursor-pointer 
+              hover:underline
+            "
+          >
+            {" "}
+            Log in
+          </span>
+        </p>
+      </div>
     </div>
   );
 
@@ -35,10 +134,9 @@ const RegisterModal = () => {
       title="Register"
       actionLabel="Continue"
       onClose={registerModal.onClose}
-      onSubmit={function (): void {
-        throw new Error("Function not implemented.");
-      }}
+      onSubmit={handleSubmit(onSubmit)}
       body={bodyContent}
+      footer={footerContent}
     />
   );
 };
